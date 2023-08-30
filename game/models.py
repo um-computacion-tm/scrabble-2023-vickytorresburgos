@@ -5,15 +5,11 @@ class Tile:
         self.value = value
         self.cant = cant
 
-        def __getitem__(self,index):
-            if index == 2:
-                return self.cant
-
 class BagTiles:
   
     def __init__ (self):
         
-        self.tiles = [Tile(letter, value, quantity) for letter, value, quantity in [
+        self.tiles = [Tile(letter, value, cant) for letter, value, cant in [
             ('A', 1, 12),
             ('B', 3, 2),
             ('C', 3, 4),
@@ -55,5 +51,5 @@ class BagTiles:
             tiles.append(self.tiles.pop())
         self.total_tiles -= count    
    
-"""    def put(self, tiles):
-        self.tiles.extend(tiles)"""
+    def put(self, tiles):
+        self.tiles.extend(tiles)
