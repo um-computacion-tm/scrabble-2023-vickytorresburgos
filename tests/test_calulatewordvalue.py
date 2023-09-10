@@ -1,5 +1,5 @@
 import unittest
-from xxx import calculate_word_value
+from cell import calculate_word_value
 from game.cell import Cell
 from game.models import Tile
 
@@ -65,7 +65,6 @@ class TestCalculateWordValue(unittest.TestCase):
 
     def test_with_letter_word_multiplier_no_active(self):
 
-        # QUE HACEMOS CON EL ACTIVE ????
 
         word = [
             Cell(
