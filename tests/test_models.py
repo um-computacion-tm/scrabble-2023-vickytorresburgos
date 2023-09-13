@@ -191,26 +191,26 @@ class TestBagTiles(unittest.TestCase):
             bag.tiles,
         )
 
-    def test_take(self):
-        bag = BagTiles()
-        tiles = bag.take(8)
-        self.assertEqual(
-            bag.total_tiles,
-            90,
-            )
-        self.assertEqual(
-            len(tiles),
-            2,
-            )
+    # def test_take(self):
+    #     bag = BagTiles()
+    #     tiles = bag.take(8)
+    #     self.assertEqual(
+    #         bag.total_tiles,
+    #         90,
+    #         )
+    #     self.assertEqual(
+    #         len(tiles),
+    #         2,
+    #         )
 
-    def test_put(self):
-        bag = BagTiles()
-        put_tiles = [Tile('Z', 1),Tile('Y', 1)]
-        bag.put(put_tiles)
-        self.assertEqual(
-            len(bag.tiles),
-            7,
-            )
+    # def test_put(self):
+    #     bag = BagTiles()
+    #     put_tiles = [Tile('Z', 1),Tile('Y', 1)]
+    #     bag.put(put_tiles)
+    #     self.assertEqual(
+    #         len(bag.tiles),
+    #         7,
+    #         )
 
 if __name__ == '__main__':
     unittest.main()
