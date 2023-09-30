@@ -1,5 +1,7 @@
 CHANGELOG
 
+30/9: added test player 
+
 29/9:added scrabble game tests
 
 28/9:updated CHANGELOG
