@@ -1,5 +1,7 @@
 CHANGELOG
 
+1/10: added cell 
+
 30/9: added test player 
 
 29/9:added scrabble game tests
