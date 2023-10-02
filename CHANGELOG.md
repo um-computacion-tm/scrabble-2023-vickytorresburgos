@@ -1,5 +1,7 @@
 CHANGELOG
 
+2/10: added test models
+
 1/10: added cell 
 
 30/9: added test player 
