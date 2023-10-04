@@ -6,50 +6,45 @@ class Tile:
         self.cant = cant
 
 class BagTiles:
-  
     def __init__ (self):
-        
-        self.tiles = [Tile(letter, value, cant) for letter, value, cant in [
-            ('A', 1, 12),
-            ('B', 3, 2),
-            ('C', 3, 4),
-            ('CH', 5, 1),
-            ('D', 2, 5),
-            ('E', 1, 12),
-            ('F', 4, 1),
-            ('G', 2, 2),
-            ('H', 4, 2),
-            ('I', 1, 6),
-            ('J', 8, 1),
-            ('L', 1, 4),
-            ('LL', 8, 1),
-            ('M', 3, 2),
-            ('N', 1, 5),
-            ('Ñ', 8, 1),
-            ('O', 1, 9),
-            ('P', 3, 2),
-            ('Q', 5, 1),
-            ('R', 1, 5),
-            ('RR', 8, 1),
-            ('S', 1, 6),
-            ('T', 1, 4),
-            ('U', 1, 5),
-            ('V', 4, 1),
-            ('X', 8, 1),
-            ('Y', 4, 1),
-            ('Z', 10, 1),
-        ]]
-        
-        random.shuffle(self.tiles)
-        self.total_tiles = 0
-        for tile in self.tiles:
-            self.total_tiles += tile.cant 
+            self.tiles = [
+                Tile('A', 1, 12),
+                Tile('B', 3, 2),
+                Tile('C', 3, 4),
+                Tile('CH', 5, 1),
+                Tile('D', 2, 5),
+                Tile('E', 1, 12),
+                Tile('F', 4, 1),
+                Tile('G', 2, 2),
+                Tile('H', 4, 2),
+                Tile('I', 1, 6),
+                Tile('J', 8, 1),
+                Tile('L', 1, 4),
+                Tile('LL', 8, 1),
+                Tile('M', 3, 2),
+                Tile('N', 1, 5),
+                Tile('Ñ', 8, 1),
+                Tile('O', 1, 9),
+                Tile('P', 3, 2),
+                Tile('Q', 5, 1),
+                Tile('R', 1, 5),
+                Tile('RR', 8, 1),
+                Tile('S', 1, 6),
+                Tile('T', 1, 4),
+                Tile('U', 1, 5),
+                Tile('V', 4, 1),
+                Tile('X', 8, 1),
+                Tile('Y', 4, 1),
+                Tile('Z', 10, 1),
+            ]
+            random.shuffle(self.tiles)    
     
     def take(self, count):
         tiles = []
         for _ in range(count):
-            tiles.append(self.tiles.pop())
-        self.total_tiles -= count    
-   
+              tiles.append (self.tiles.pop(0))
+        return tiles
+    
     def put(self, tiles):
         self.tiles.extend(tiles)
+    
