@@ -1,5 +1,7 @@
 CHANGELOG
 
+3/10: added models
+
 2/10: added test models
 
 1/10: added cell 
