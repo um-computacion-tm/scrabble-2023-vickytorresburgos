@@ -1,4 +1,8 @@
 import random
+
+class NoTilesInTheBagException(Exception):
+    pass
+
 class Tile:
     def __init__(self, letter, value, cant):
         self.letter = letter
@@ -39,11 +43,15 @@ class BagTiles:
             ]
             random.shuffle(self.tiles)    
     
-    def take(self, count):
+    def take(self,count):
         tiles = []
-        for _ in range(count):
-              tiles.append (self.tiles.pop(0))
-        return tiles
+        if len(self.tiles) == 0: 
+            raise NoTilesInTheBagException("There are no tiles in the bag")
+        for i in range(count):
+            if len(self.tiles) == 0:  
+                break
+            tiles.append(self.tiles.pop())
+        return tiles    
     
     def put(self, tiles):
         self.tiles.extend(tiles)

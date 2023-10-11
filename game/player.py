@@ -13,20 +13,28 @@ class Player:
     def take_tiles(self, bag: BagTiles, amount):
         self.tiles.extend(bag.take(amount))
 
+    def show_tiles(self):
+        return self.tiles
+    
     def has_letters(self, tiles=[]):
         letras_jugador = [tile.letter for tile in self.tiles]
+        # Transform tiles into letters
         letras_palabra = [tile.letter for tile in tiles]
+        # convert into counter to count needed letters
         letras_necesarias = Counter(letras_palabra)
+        # Compare with the letters available to the player
         for letra, cantidad in letras_necesarias.items():
             if letras_jugador.count(letra) < cantidad:
                 return False
         return True
     
     def exchange_tiles(self, bag, tiles_to_exchange):
-        if len(self.tiles) < tiles_to_exchange:
+        if len(self.tiles) < tiles_to_exchange: #tiles the player want to exchange
             raise NotEnoughTilesException(f"No hay suficientes fichas para intercambiar ({len(self.tiles)} < {tiles_to_exchange})")
+        # takes player tiles
         exchanged_tiles = self.tiles[:tiles_to_exchange]
         self.tiles = self.tiles[tiles_to_exchange:]
+        # add new tilees in the bag
         new_tiles = bag.take(tiles_to_exchange)
         self.tiles.extend(new_tiles)
         return exchanged_tiles, new_tiles
@@ -42,3 +50,4 @@ class Player:
 
     def get_score(self):
         return self.score
+    
