@@ -7,9 +7,9 @@ from io import StringIO
 import sys
 
 class TestGetPlayerNames(unittest.TestCase):
-    @patch('builtins.input', side_effect=['Alma', 'Fabiana', 'Agus'])
+    @patch('builtins.input', side_effect=['Victoria', 'Emiliana', 'Claudia'])
     def test_get_player_names_3_players(self, mock_input):
-        expected_output = ['Alma', 'Fabiana', 'Agus']
+        expected_output = ['Victoria', 'Emiliana', 'Claudia']
         result = get_player_names(3)
         self.assertEqual(result, expected_output)
 
