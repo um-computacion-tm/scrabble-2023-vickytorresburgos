@@ -18,14 +18,14 @@ def get_player_count():
             if player_count <= 3:
                 break
         except Exception as e:
-            print('ingrese un numero por favor')
+            print('ingrese un numero por favor: ')
     return player_count
 
 def main():
-    print("Bienvenido!")
+    print("Que comience el juego!")
     names = get_player_names(player_count=0)
     scrabble_game = ScrabbleGame(players_count=get_player_count())
-    print("Cantidad de jugadores: ", len(scrabble_game.players))
+    print("Ingrese la cantidad de jugadores: ", len(scrabble_game.players))
     # scrabble_game.next_turn()
     print(f"Turno del jugador {scrabble_game.current_player.id}")
     game = ScrabbleGame(get_player_count())
