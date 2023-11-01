@@ -66,7 +66,7 @@ Universidad De Mendoza
 
 Computacion I
 
-Juan Manuel Aidar "62092" 
+Maria Victoria Torres Burgos "62092" 
 
 2023
 
