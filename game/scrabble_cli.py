@@ -1,204 +1,157 @@
-from game.scrabble import ScrabbleGame, NoValidWordException,NoEnoughTilesException
-from game.board import Board,NoCenterLetterException
-from game.player import Player
-from colorama import Fore, Style, init
+from game.scrabble import *
 
+def players_to_play():
+    while True:
+        try: 
+            player = int(input("Enter the number of players(2-4): "))
+            if player <= 1 or player > 4:
+                raise ValueError
+            return player
+        except ValueError:
+            print("Invalid number")
+            
 class ScrabbleCli:
-    def __init__(self,player_count):
-        self.game = ScrabbleGame(players_count=player_count)
-        self.first_time = True
+    def __init__(self, players):
+        self.game = ScrabbleGame(players)
 
-    def start_game(self):
-        self.print_welcome_message()
-        player_count = self.get_player_count()
-        player_names = self.get_player_names(player_count)
-        self.draw_tiles()
+    def name_players(self, players):
+        for i in range(players):
+            name = str(input(f"Enter name of player {i+1}: " ))
+            self.game.players[i].name = name
+                        
+    def show_score(self):
+        print(self.game.current_player.score)
     
-        while not self.game.is_game_over():
-            current_player = self.game.current_player
-            player_name = player_names[current_player]
+    def show_tiles(self):
+        print(self.game.current_player.tiles)
         
-            print(f"It's {Fore.MAGENTA + player_name.upper() + Fore.RESET}'s turn:")
+    def show_current_player(self):
+        print(f"Turn of player {self.game.current_player.name}")
         
-            self.show_tiles(player=Player)
-            self.show_board()
-            self.player_turn()
-
-    def get_player_count(self):
+    def exchange_index_tile(self):
+        index_exchange = int(input(f"Enter index of tile to change (0-{len(self.game.current_player.tiles)-1}): "))
+        tile_exchange = self.game.current_player.tiles[index_exchange]
+        self.game.current_player.exchange_tile(self.game.bag_tiles ,tile_exchange)
+        
+    def choose_wildcard(self):
+        wildcard = self.game.check_wildcard()
+        if wildcard:
+            for i in self.game.current_player.tiles:
+                if i.value == 0:
+                    letter_for_wild = str(input("Enter letter for wildcard:"))
+                    letter_for_wild = letter_for_wild.upper()
+                    i.set_letter(letter_for_wild)
+            
+    def get_row(self):
         while True:
             try:
-                player_count = int(input('Quantity of players (1-3): '))
-                if 1 <= player_count <= 3:
-                    return player_count
-                else:
-                    print('Please enter a number between 1 and 3.')
+                row = int(input("Enter row(0-14): "))
+                if row < 0 or row >= 15:
+                    raise ValueError
+                return row
             except ValueError:
-                print('Please enter a number.')
+                print("Invalid number of row")
 
-    def get_player_names(self, player_count):
-        self.game.player_names = []
-        for i in range(player_count):
-            name = input(f"Enter the name for player {i + 1}: ")
-            player = Player()
-            player.write_name(name)
-            self.game.players.append(player)
-            self.game.player_names.append(name)
-        return self.game.player_names
-
-    def draw_tiles(self):
-        current_player = self.game.players[self.game.current_player]
-        if len(current_player.tiles) == 0:
-            self.game.give_initial_tiles_to_all_players()
-        else:
-            if len(current_player.tiles) < 7:
-                needed_tiles = 7 - len(current_player.tiles)
-                self.game.give_player_tiles(self.game.current_player, needed_tiles)
-
-    def player_turn(self):
-        while True:
-            action = input('What do you want to do? 1) Play / 2) Skip Turn / 3) Scores ')
-            action = self.game.comprobate_is_a_number(action)
-            if action == 1:
-                self.player_playing()
-                break
-            elif action == 2:
-                self.skip_turn()
-            elif action == 3:
-                self.show_scores()
-        
-    def player_playing(self):
-        actions = {1: self.place_and_put_word, 2: self.exchange, 3: self.convert_joker, 4: self.quite_game }
-        while True:
-            action = input('What do you want to do? 1) Put / 2) Exchange / 3) Convert joker / 4) Skip ')
-            action = self.game.comprobate_is_a_number(action)
-            action_function = actions.get(action)
-            if action_function is None:
-                print('Invalid, try again')
-            else:
-                if action_function():
-                    return True
-            
-    def convert_joker(self):
-        current_player = self.game.players[self.game.current_player]
-        tiles = current_player.tiles
-        if '#' in [tile.letter for tile in tiles]:
-            while True:
-                letter_choice = input("Choose a letter for the wildcard (#): ")
-                if len(letter_choice) == 1 and letter_choice.isalpha():
-                    letter_choice = letter_choice.upper() 
-                    for tile in tiles:
-                        if tile.letter == '#':
-                            tile.letter = letter_choice
-                            break 
-                    self.show_tiles(current_player)
-                    break
-                else:
-                    print("Invalid letter. Please choose a single letter (A-Z).")
-        else:
-            print('You do not have a joker')
-            
-    def show_scores(self):
-        print(Fore.YELLOW + "{:<15} {:<10}".format("Player", "Score") + Fore.RESET)
-        print(Fore.YELLOW + "-" * 25 + Fore.RESET)
-        for player in self.game.players:
-            player_name = player.get_name().upper()
-            player_score = player.get_score()
-            print("{:<15} {:<10}".format(player_name, player_score))
-
-    def place_and_put_word(self):
+    def get_col(self):
         while True:
             try:
-                word, location, orientation = self.get_word_location_orientation()
-                if word == '0':
-                    break
-                if self.first_time:
-                    self.place_first_word(word, location, orientation)
-                else:
-                    self.place_word_not_first_time(word, location, orientation)
-                return 'finish'
-            except (NoValidWordException, NoEnoughTilesException) as e:
-                print(f'Error: {e}')
-                validate = input('You can return by pressing 0 or press any key to continue: ')
-                if validate == '0':
-                    break
-
-    def place_first_word(self, word, location, orientation):
-        try:
-            success = self.game.put_on_the_board_first_time(word, location, orientation)
-            if success:
-                print("Palabra colocada exitosamente en el centro.")
-                self.first_time = False
-                self.game.calculate_score_words(new_words=None, start=0, orientation=None)
-                self.game.play_word(word,location,orientation)
-        except NoCenterLetterException as f:
-            print(f'Error: {f}')
-            validate = input('You can return by pressing 0 or press any key to continue: ')
-            if validate == '0':
-                return
-
-    def place_word_not_first_time(self, word, location, orientation):
-        if self.game.put_word_not_first_time(word, location, orientation):
-            self.game.calculate_score_words(new_words=None, start=0, orientation=None)
-            self.game.play_word(word,location,orientation)
-            print("Palabra colocada exitosamente.")
-    
-    def get_word_location_orientation(self):
-        while True:
-            word = input('Put a word (0 to skip): ')
-            if word == '0':
-                return word, None, None
-            location_x = input('Put the start row (0-14): ')
-            location_x = self.game.comprobate_is_a_number(location_x)
-            location_y = input('Put the start column (0-14): ')
-            location_y = self.game.comprobate_is_a_number(location_y)
-            location = (location_x, location_y)
-            orientation = input('Put the orientation (V/H): ')
-            orientation = orientation.strip().upper()
-            orientation = self.game.comprobate_is_an_orientation(orientation)
-            return word, location, orientation
-        
-    def exchange(self):
-        player = self.game.players[self.game.current_player]
-        while True:
-            tiles_to_exchange = input("Choose the tiles you want to exchange; '0' to finish): ")
-            if tiles_to_exchange == '0':
-                break
-            tiles_to_exchange = list(tiles_to_exchange)
-            if all(tile.isnumeric() and 1 <= int(tile) <= 7 for tile in tiles_to_exchange):
-                tiles_to_exchange = [int(tile) - 1 for tile in tiles_to_exchange]
-                if all(0 <= index < len(player.tiles) for index in tiles_to_exchange):
-                    exchanged_tiles, new_tiles = player.exchange_tiles(self.game.bag_tiles, tiles_to_exchange)
-                    print(f"Exchanged tiles: {[tile for tile in exchanged_tiles]}")
-                    print(f"New tile: {[tile for tile in new_tiles]}")
-                    print(f'New tiles: {player.tiles}')
-                    break
-                else:
-                    print("Invalid tile index. Please try again.")
-            else:
-                print("Invalid input. Please enter valid tile indices or '0' to finish).")
+                col = int(input("Enter col(0-14): "))
+                if col < 0 or col >= 14:
+                    raise ValueError
+                return col
+            except ValueError:
+                print("Invalid number of col")
             
-    def quite_game(self):
-        return 'finish'
-
-    def show_tiles(self,player):
-        tiles = self.game.players[self.game.current_player].show_tiles()
-        player_name = self.game.players[self.game.current_player].get_name()
-        tiles_str = ", ".join([str(tile) for tile in tiles])
-        print(f"{player_name}'s tiles: [{tiles_str}]")
-
-    def print_welcome_message(self):
-        init(autoreset=True)  
-        print(f"{Fore.MAGENTA}{Style.BRIGHT}Welcome to {Fore.RED}SCRABBLE {Style.RESET_ALL}")
-        init() 
-
-    def show_board(self):
-        board_state = self.game.board.show_board()
-        print(board_state)
+    def get_orientation(self):
+        while True:
+            try:
+                orientation = str(input("Enter orientation(H/V): "))
+                orientation = orientation.upper()
+                if orientation == "H" or orientation == "V":
+                    return orientation
+                raise ValueError
+            except ValueError:
+                print("Invalid orientation")
+                
+    def enter_word(self):
+        while True:    
+            try:
+                word = str(input("Enter word or type -go back- to return: "))
+                if word == "go back":
+                    break
+                word = self.game.str_to_list(word)
+                row = self.get_row()
+                col = self.get_col()
+                orientation = self.get_orientation()
+                location = (row, col)
+                self.game.put_words(word, location, orientation)
+                self.game.add_score(word, location, orientation)
+                if self.game.validate_word(word, location, orientation) is False:
+                    raise InvalidWordException
+                self.game.get_words(word, location, orientation)
+                if self.game.get_words(word, location, orientation) is False:
+                    self.game.return_old_situation(word, location, orientation)
+                    raise InvalidWordException
+                self.end_current_turn()
+            except InvalidWordException:
+                print("Invalid word")
+            
+    def end_current_turn(self):
+        raise EndTurnException        
     
-    def skip_turn(self):
-        response = input("Are you sure you would like to skip your turn? (Y/N): ")
-        if response.upper() == "Y" or response.upper() == "y":
-            self.game.next_turn()
-        else:
-            return "Please enter a word."
-
+    def vote_to_end_game(self):
+        vote = str(input("Are you sure you want to finish the game?(y/n): "))
+        vote=vote.upper()
+        self.game.votes.extend(vote)
+               
+    def game_turn(self):
+       self.game.fill_current_player_tiles()
+       while True:
+           print("\n")
+           print("Tiles:")
+           self.show_tiles() 
+           print("Score:")
+           self.show_score()
+           self.game.board.print_board()
+           option = input(
+               "\n"
+               "Enter a number:\n"
+               "0. Put Word\n"
+               "1. Exchange Tiles\n"
+               "2. End turn\n"
+               "9. End game\n"
+               "= "
+           
+           )
+           
+           try:
+               if option == "0":   
+                   self.choose_wildcard()
+                   self.enter_word() 
+                   
+                            
+               elif option == "1":
+                   tile_changes = int(input("Hoy many tiles are you changing: "))
+                   for _ in range(tile_changes):
+                       self.exchange_index_tile()
+                       self.show_tiles()
+                   self.end_current_turn() 
+               elif option == "2":
+                   self.end_current_turn()
+               elif option == "9":
+                   self.vote_to_end_game()
+                   self.end_current_turn()
+               else:
+                   pass
+           except EndTurnException:
+               print(
+                   "End Turn"
+                   "\n"
+                   )
+               break
+           
+    def show_results(self):
+        print("The Game has ended")
+        leaderboard = self.game.sort_players_by_score()
+        print(leaderboard)
+        print(f"The winner is: {leaderboard[0][0]}")
