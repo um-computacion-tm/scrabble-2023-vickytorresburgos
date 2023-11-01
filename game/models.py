@@ -8,6 +8,20 @@ class Tile:
         self.letter = letter
         self.value = value
         self.cant = cant
+        
+    def __repr__(self):
+        return f"('{self.letter}',{self.value})"
+
+class JokerTile(Tile):
+    def __init__(self, letter, value):
+        super().__init__(letter, value)
+
+    def select_letter(self, selection):
+        selection = selection.upper()
+        for tile in BagTiles:
+            if selection == tile['letter']:
+                self.letter = tile['letter']
+                self.value = 0
 
 class BagTiles:
     def __init__ (self):
@@ -43,16 +57,30 @@ class BagTiles:
             ]
             random.shuffle(self.tiles)    
     
-    def take(self,count):
-        tiles = []
-        if len(self.tiles) == 0: 
-            raise NoTilesInTheBagException("There are no tiles in the bag")
-        for i in range(count):
-            if len(self.tiles) == 0:  
-                break
-            tiles.append(self.tiles.pop())
-        return tiles    
+class Tiles:
+    def __init__(self):
+        self.tiles = []
+        for tile_info in BagTiles:
+            for _ in range(tile_info["quantity"]):
+                letter = tile_info["letter"]
+                value = tile_info["value"]
+                tile = Tile(letter, value)
+                self.tiles.append(tile)
+        random.shuffle(self.tiles)
+
+    def __len__(self):
+        return len(self.tiles)
     
-    def put(self, tiles):
+    def tiles_left_in_bag(self):
+        return len(self.tiles)
+
+    def take(self, amount):
+        if not self.tiles:
+            raise NoTilesInTheBagException("No tiles left in the bag")
+        if amount > len(self.tiles):
+            amount = len(self.tiles)
+        return [self.tiles.pop() for _ in range(amount)]
+
+    def put(self, tiles=list):
         self.tiles.extend(tiles)
     
