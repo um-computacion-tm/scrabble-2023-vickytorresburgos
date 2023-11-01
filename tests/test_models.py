@@ -1,10 +1,10 @@
 import unittest
-from game.models import Tile, BagTiles
+from game.models import NoTilesInTheBagException,Tile,JokerTile,BagTiles,Tiles
 from unittest.mock import patch
 
 class TestTiles(unittest.TestCase):
     def test_tileA(self):
-        tile = Tile('A', 1,12)
+        tile = Tile('A', 1, 12)
         self.assertEqual(tile.letter,'A')
         self.assertEqual(tile.value, 1)
         self.assertEqual(tile.cant, 12)
@@ -172,45 +172,85 @@ class TestTiles(unittest.TestCase):
             self.assertEqual(tile.value,10)
             self.assertEqual(tile.cant,1)
 
+class TestJokerTile(unittest.TestCase):
+    def test_Joker(self):
+        tilebag=BagTiles()
+        tilebag.take(7)
+        tilebag.put([JokerTile('A',1), JokerTile('T', 1)])
+        self.assertEqual(tilebag.tiles_left_in_bag(),BagTiles-5)
+
+    def test_select_letter_valid_letter(self):
+        joker_tile = JokerTile('#', 0)
+        joker_tile.select_letter('A')
+        self.assertEqual(joker_tile.letter, 'A')
+        self.assertEqual(joker_tile.value, 0)
+
+    def test_select_letter_updates_value(self):
+        joker_tile = JokerTile('#', 0)
+        joker_tile.select_letter('Z')
+        self.assertEqual(joker_tile.letter, 'Z')
+        self.assertEqual(joker_tile.value, 0)
+
+
 class TestBagTiles(unittest.TestCase):
     @patch('random.shuffle')
     def test_bag_tiles(self, patch_shuffle):
         bag = BagTiles()
         self.assertEqual(
-            len(bag.tiles),
-            28,
+            bag.tiles_left_in_bag(),  
+            BagTiles,
         )
         self.assertEqual(
             patch_shuffle.call_count,
-            1,
+            1
         )
         self.assertEqual(
             patch_shuffle.call_args[0][0],
             bag.tiles,
         )
-
-
     def test_take(self):
-        bag = BagTiles()
-        tiles = bag.take(2)
-        self.assertEqual(
-            len(bag.tiles),
-            26,
+            bag = BagTiles()
+            tiles = bag.take(2)
+            self.assertEqual(
+                bag.tiles_left_in_bag(),
+            (BagTiles-2),
         )
-        self.assertEqual(
+            self.assertEqual(
             len(tiles),
             2,
         )
+    
+    def test_len(self):
+        bag = BagTiles()
+        expected_length = len(bag.tiles)  
+        self.assertEqual(len(bag), expected_length)
+        expected_length = len(bag.tiles)  
+        self.assertEqual(len(bag), expected_length)
 
+    def test_take_more_than_available(self):
+        bag = BagTiles()
+        total_tiles = len(bag.tiles)
+        amount_to_take = total_tiles + 10  
+        tiles_taken = bag.take(amount_to_take)
+        self.assertEqual(len(tiles_taken), total_tiles)
+
+    def test_take_exception(self):
+        bag = BagTiles()
+        tiles_taken = bag.take(97)
+        with self.assertRaises(NoTilesInTheBagException):
+            tiles = bag.take(1)
+        self.assertEqual(
+                bag.tiles_left_in_bag(),
+            (BagTiles - 97)
+        )
+    
     def test_put(self):
         bag = BagTiles()
-        put_tiles = [Tile('Z', 10, 1), Tile('Y', 4, 1)]
-        bag.put(put_tiles)
-        self.assertEqual(
-            len(bag.tiles),
-            30,
-        )
-
-
+        taken = bag.take(5)
+        bag.put([taken[0], taken[1], taken[2]])
+        self.assertEqual(bag.tiles_left_in_bag(),BagTiles-2)
 if __name__ == '__main__':
     unittest.main()
+
+
+

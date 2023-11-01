@@ -1,26 +1,33 @@
 from game.models import Tile
 
 class Cell:
-    def __init__(self, multiplier, multiplier_type,letter=None, active = True):
+    def __init__(self, multiplier, multiplier_type, tile: Tile = None, row=0, col=0):        
         self.multiplier = multiplier
         self.multiplier_type = multiplier_type
-        self.active = active
-        self.letter = letter
+        self.multiplier_active = True
+        self.tile = tile
+        self.row = row
+        self.col = col
 
-    def add_letter(self, tile:Tile):
-        self.letter = tile
+    # def __repr__(self):
+    #     return f'Cell(tile={self.tile}-multiplier={self.multiplier}-multiplier_type={self.multiplier_type}-row={self.row}-col={self.col})'
+
+    def add_letter(self, tile: Tile,row,col):
+        self.tile = tile
+        self.row = row
+        self.col = col
 
     def calculate_value(self):
-        if self.letter is None:
+        if self.tile is None:
             return 0
         if self.multiplier_type == 'letter':
-            value = self.letter.value * self.multiplier
+            value = self.tile.value * self.multiplier
             self.multiplier_type = None
             self.multiplier_active = False
             return value
         else:
-            return self.letter.value
-    
+            return self.tile.value    
+
     def calculate_word_value(self, word):
         word_value = 0
         word_multiplier = 1
