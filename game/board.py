@@ -7,7 +7,6 @@ class Board:
         self.grid = [
             [ Cell(None,True,1, '') for _ in range(15) ]for _ in range(15)]
         self.is_empty=None
-    #diagonales triple palabra, doble palabra, triple letra, doble letra,
     def add_bonus(self):
         TRIPLE_WORD_SCORE = ((0,0), (7, 0), (14,0), (0, 7), (14, 7), (0, 14),(7, 14), (14,14))
         DOUBLE_WORD_SCORE = ((1,1),(2,2),(3,3),(4,4),(10,10),(11,11),(12,12),(13,13),(1,13),(2,12),(3,11), (4,10),(7,7),(13,1),(12,2),(11,3),(10,4))

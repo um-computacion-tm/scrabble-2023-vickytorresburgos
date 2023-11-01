@@ -128,8 +128,7 @@ class ScrabbleCli:
                if option == "0":   
                    self.choose_wildcard()
                    self.enter_word() 
-                   
-                            
+                                     
                elif option == "1":
                    tile_changes = int(input("Hoy many tiles are you changing: "))
                    for _ in range(tile_changes):

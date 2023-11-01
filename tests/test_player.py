@@ -13,7 +13,6 @@ class TestPlayer(unittest.TestCase):
     def test_get_score(self):
         player=Player()
         score=player.get_score()
-        print(score)
         self.assertEqual(score,0)
     def test_get_tiles(self):
         player=Player()

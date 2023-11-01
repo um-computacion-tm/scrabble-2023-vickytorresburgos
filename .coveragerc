@@ -6,7 +6,6 @@ omit =
     env/*
     */test*
     */__init__.py
-    colorama/*
 [report]
 exclude_lines =
     pragma: no cover
